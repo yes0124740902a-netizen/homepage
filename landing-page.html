@@ -1524,10 +1524,27 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('API 호출 실패');
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API Error:', response.status, errorData);
+
+                    if (response.status === 429) {
+                        throw new Error('API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.');
+                    } else if (response.status === 400) {
+                        throw new Error('잘못된 요청입니다.');
+                    } else if (response.status === 403) {
+                        throw new Error('API 키가 유효하지 않습니다.');
+                    } else {
+                        throw new Error(`API 오류 (${response.status})`);
+                    }
                 }
 
                 const data = await response.json();
+
+                // 응답 검증
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    throw new Error('올바른 응답을 받지 못했습니다.');
+                }
+
                 const botResponse = data.candidates[0].content.parts[0].text;
 
                 // 대화 히스토리에 추가
@@ -1549,9 +1566,20 @@
                 addMessage(botResponse, 'bot');
 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Chatbot Error:', error);
                 removeTypingIndicator(typingId);
-                addMessage('죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요. 😢', 'bot');
+
+                // 에러 메시지 표시
+                let errorMessage = '죄송합니다. ';
+                if (error.message.includes('429') || error.message.includes('한도')) {
+                    errorMessage += 'API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요. 🙏';
+                } else if (error.message.includes('403') || error.message.includes('키')) {
+                    errorMessage += '서비스 연결에 문제가 있습니다. 관리자에게 문의해주세요. 📞';
+                } else {
+                    errorMessage += '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요. 😢';
+                }
+
+                addMessage(errorMessage + '\n\n직접 문의: 카카오톡 @웹마스터 또는 010-1234-5678', 'bot');
             } finally {
                 // 전송 버튼 재활성화
                 chatbotSend.disabled = false;
