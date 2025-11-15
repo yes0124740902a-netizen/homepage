@@ -1409,6 +1409,12 @@
         const GEMINI_API_KEY = 'AIzaSyAzciwC0pdtw_lAKx9HAZEO3_N2FVhlvZw';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
+        // Google Apps Script Web App URL (배포 후 여기에 URL을 입력하세요)
+        const CHATBOT_SHEET_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+        // 세션 ID 생성 (사용자 구분용)
+        const SESSION_ID = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
         // 시스템 프롬프트 (컨텍스트 제공)
         const SYSTEM_CONTEXT = `당신은 "웹제작 마스터 클래스"의 친절한 AI 상담 도우미입니다.
 
@@ -1457,6 +1463,40 @@
 
         // 대화 히스토리
         let conversationHistory = [];
+        let messageIndex = 0;
+
+        // 구글 시트에 대화 기록 저장 함수
+        async function saveToGoogleSheets(userMessage, aiResponse) {
+            // Apps Script URL이 설정되지 않았으면 저장하지 않음
+            if (CHATBOT_SHEET_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') {
+                console.log('Google Sheets URL not configured');
+                return;
+            }
+
+            messageIndex++;
+
+            try {
+                const response = await fetch(CHATBOT_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sessionId: SESSION_ID,
+                        userMessage: userMessage,
+                        aiResponse: aiResponse,
+                        messageIndex: messageIndex,
+                        ipAddress: '',
+                        userAgent: navigator.userAgent
+                    })
+                });
+
+                console.log('Conversation saved to Google Sheets');
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+            }
+        }
 
         // 챗봇 토글
         chatbotToggle.addEventListener('click', () => {
@@ -1605,6 +1645,9 @@
 
                 // 봇 응답 표시
                 addMessage(botResponse, 'bot');
+
+                // 구글 시트에 대화 기록 저장
+                await saveToGoogleSheets(userMessage, botResponse);
 
             } catch (error) {
                 console.error('Chatbot Error:', error);
