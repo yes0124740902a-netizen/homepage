@@ -20,8 +20,8 @@ Allow: /
 # 크롤링 속도 제한 (선택사항)
 Crawl-delay: 1
 
-# Sitemap 위치 (배포 후 실제 도메인으로 변경 필요)
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
+# Sitemap 위치
+Sitemap: https://web-master-class-landing-ar3j68d9d-jisus-projects-06a64a80.vercel.app/sitemap.xml
 
 # 제외할 경로 (필요시 추가)
 # Disallow: /admin/

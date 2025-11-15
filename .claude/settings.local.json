@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: 웹제작 마스터 클래스 랜딩페이지\n\n- 완성된 랜딩페이지 (10개 섹션 구성)\n- 구글 시트 연동 신청 폼\n- SEO 최적화 메타데이터\n- 오픈 그래프 이미지 설정\n- robots.txt & sitemap.xml 생성\n- Vercel 배포 설정\n\n🤖 Generated with Claude Code\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
