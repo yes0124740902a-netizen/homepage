@@ -6,7 +6,7 @@
 
     <!-- 메인 랜딩페이지 -->
     <url>
-        <loc>https://web-master-class-landing-ar3j68d9d-jisus-projects-06a64a80.vercel.app/landing-page.html</loc>
+        <loc>https://web-master-class-landing.vercel.app/landing-page.html</loc>
         <lastmod>2025-11-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
@@ -14,7 +14,7 @@
 
     <!-- 홈페이지 (있는 경우 추가) -->
     <url>
-        <loc>https://web-master-class-landing-ar3j68d9d-jisus-projects-06a64a80.vercel.app/</loc>
+        <loc>https://web-master-class-landing.vercel.app/</loc>
         <lastmod>2025-11-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>

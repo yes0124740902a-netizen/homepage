@@ -21,7 +21,7 @@ Allow: /
 Crawl-delay: 1
 
 # Sitemap 위치
-Sitemap: https://web-master-class-landing-ar3j68d9d-jisus-projects-06a64a80.vercel.app/sitemap.xml
+Sitemap: https://web-master-class-landing.vercel.app/sitemap.xml
 
 # 제외할 경로 (필요시 추가)
 # Disallow: /admin/
