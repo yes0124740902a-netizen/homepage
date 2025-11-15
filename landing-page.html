@@ -1494,6 +1494,25 @@
             const typingId = showTypingIndicator();
 
             try {
+                // 대화 히스토리 구성
+                const messages = [];
+
+                // 시스템 컨텍스트를 첫 번째 user 메시지로 추가 (한 번만)
+                if (conversationHistory.length === 0) {
+                    messages.push({
+                        role: 'user',
+                        parts: [{ text: SYSTEM_CONTEXT + '\n\n사용자 질문: ' + userMessage }]
+                    });
+                } else {
+                    // 대화 히스토리가 있으면 이전 대화 추가
+                    messages.push(...conversationHistory);
+                    // 현재 메시지 추가
+                    messages.push({
+                        role: 'user',
+                        parts: [{ text: userMessage }]
+                    });
+                }
+
                 // Gemini API 호출
                 const response = await fetch(GEMINI_API_URL, {
                     method: 'POST',
@@ -1501,25 +1520,31 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        contents: [
-                            {
-                                parts: [
-                                    { text: SYSTEM_CONTEXT }
-                                ]
-                            },
-                            ...conversationHistory,
-                            {
-                                parts: [
-                                    { text: userMessage }
-                                ]
-                            }
-                        ],
+                        contents: messages,
                         generationConfig: {
-                            temperature: 0.7,
+                            temperature: 0.9,
                             topK: 40,
                             topP: 0.95,
-                            maxOutputTokens: 1024,
-                        }
+                            maxOutputTokens: 2048,
+                        },
+                        safetySettings: [
+                            {
+                                category: "HARM_CATEGORY_HARASSMENT",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_HATE_SPEECH",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                threshold: "BLOCK_NONE"
+                            }
+                        ]
                     })
                 });
 
@@ -1542,22 +1567,38 @@
 
                 // 응답 검증
                 if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    console.error('Invalid response:', data);
                     throw new Error('올바른 응답을 받지 못했습니다.');
                 }
 
                 const botResponse = data.candidates[0].content.parts[0].text;
 
                 // 대화 히스토리에 추가
-                conversationHistory.push(
-                    {
-                        parts: [{ text: userMessage }],
-                        role: 'user'
-                    },
-                    {
-                        parts: [{ text: botResponse }],
-                        role: 'model'
-                    }
-                );
+                if (conversationHistory.length === 0) {
+                    // 첫 대화: 시스템 컨텍스트 포함된 user 메시지와 model 응답
+                    conversationHistory.push(
+                        {
+                            role: 'user',
+                            parts: [{ text: SYSTEM_CONTEXT + '\n\n사용자 질문: ' + userMessage }]
+                        },
+                        {
+                            role: 'model',
+                            parts: [{ text: botResponse }]
+                        }
+                    );
+                } else {
+                    // 이후 대화
+                    conversationHistory.push(
+                        {
+                            role: 'user',
+                            parts: [{ text: userMessage }]
+                        },
+                        {
+                            role: 'model',
+                            parts: [{ text: botResponse }]
+                        }
+                    );
+                }
 
                 // 타이핑 인디케이터 제거
                 removeTypingIndicator(typingId);
