@@ -683,6 +683,220 @@
             border: 2px solid #fc8181;
         }
 
+        /* AI Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .chatbot-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 380px;
+            height: 550px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .chatbot-window.open {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f7fafc;
+        }
+
+        .chatbot-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .chatbot-message.bot .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .chatbot-message.user .message-avatar {
+            background: #e2e8f0;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .chatbot-message.bot .message-bubble {
+            background: white;
+            color: #2d3748;
+        }
+
+        .chatbot-message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chatbot-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chatbot-input:focus {
+            border-color: #667eea;
+        }
+
+        .chatbot-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .chatbot-send:hover {
+            transform: scale(1.05);
+        }
+
+        .chatbot-send:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .chatbot-send svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 {
@@ -709,6 +923,19 @@
 
             .application-form {
                 padding: 30px 20px;
+            }
+
+            .chatbot-window {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+
+            .chatbot-button {
+                width: 55px;
+                height: 55px;
             }
         }
     </style>
@@ -1046,6 +1273,50 @@
         </div>
     </section>
 
+    <!-- AI Chatbot -->
+    <div class="chatbot-container">
+        <button class="chatbot-button" id="chatbotToggle" aria-label="AI 상담 챗봇">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                <circle cx="8" cy="10" r="1.5"/>
+                <circle cx="12" cy="10" r="1.5"/>
+                <circle cx="16" cy="10" r="1.5"/>
+            </svg>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <h3>🤖 AI 상담 도우미</h3>
+                <button class="chatbot-close" id="chatbotClose" aria-label="닫기">×</button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chatbot-message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">
+                        안녕하세요! 웹제작 마스터 클래스 AI 상담 도우미입니다. 😊<br><br>
+                        궁금하신 점을 편하게 물어보세요!
+                    </div>
+                </div>
+            </div>
+
+            <div class="chatbot-input-area">
+                <input
+                    type="text"
+                    class="chatbot-input"
+                    id="chatbotInput"
+                    placeholder="궁금한 점을 입력하세요..."
+                    autocomplete="off"
+                />
+                <button class="chatbot-send" id="chatbotSend" aria-label="전송">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Google Apps Script 웹 앱 URL (배포 후 여기에 입력)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQoTd09-vhKZ734XJjNiS4Bq4fxLJbkzAKpfW2ARKdej5ARMugkq23WvU3LHjGIuWLBQ/exec';
@@ -1131,6 +1402,215 @@
             }
             e.target.value = value;
         });
+
+        // ========== AI Chatbot Functionality ==========
+
+        // Gemini API 설정
+        const GEMINI_API_KEY = 'AIzaSyBI3qZl_E7G9CL7-jUPBAjc-zx4gOPJlb8';
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+
+        // 시스템 프롬프트 (컨텍스트 제공)
+        const SYSTEM_CONTEXT = `당신은 "웹제작 마스터 클래스"의 친절한 AI 상담 도우미입니다.
+
+웹제작 마스터 클래스 정보:
+- 비전공자를 위한 하루 완성 웹사이트 제작 교육
+- 노코드 툴을 활용하여 코딩 지식 없이 전문가급 웹사이트 제작 가능
+- 홈페이지와 상세페이지 제작 노하우 교육
+
+강의 시간: 8시간 집중 교육 (4개 파트)
+1부: 웹사이트 기초 이해 (2시간)
+2부: 노코드 툴 마스터하기 (2시간)
+3부: 실전 페이지 제작 (3시간)
+4부: 배포 & 유지보수 (1시간)
+
+수강료:
+1. 기본 과정: ₩297,000 (8시간 현장 교육, 교육 자료 PDF, 템플릿 100종, 1개월 온라인 Q&A)
+2. 프리미엄 과정: ₩497,000 (기본 과정 + 1:1 맞춤 피드백 3회, 3개월 무제한 상담, 프리미엄 템플릿 500종, 평생 커뮤니티)
+3. 기업 단체 교육: 별도 협의 (5인 이상)
+
+특별 혜택:
+- 이번 달 조기 등록 시 30% 할인
+- 보너스 템플릿 100종 추가 증정
+- 매월 선착순 20명만 모집
+
+강사: 김웹마스터 (10년 경력, 수강생 3,000명+, 기업 웹사이트 200개 이상 제작)
+
+연락처:
+- 카카오톡: @웹마스터
+- 전화: 010-1234-5678
+
+답변 가이드라인:
+1. 친절하고 공감하는 톤으로 답변
+2. 구체적이고 명확한 정보 제공
+3. 질문이 불명확하면 추가 질문
+4. 교육 신청을 자연스럽게 유도
+5. 이모지를 적절히 사용하여 친근감 표현
+6. 답변은 간결하고 명확하게 (3-5문장 정도)`;
+
+        // DOM 요소
+        const chatbotToggle = document.getElementById('chatbotToggle');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotSend = document.getElementById('chatbotSend');
+
+        // 대화 히스토리
+        let conversationHistory = [];
+
+        // 챗봇 토글
+        chatbotToggle.addEventListener('click', () => {
+            chatbotWindow.classList.toggle('open');
+            if (chatbotWindow.classList.contains('open')) {
+                chatbotInput.focus();
+            }
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.classList.remove('open');
+        });
+
+        // 메시지 전송
+        chatbotSend.addEventListener('click', sendMessage);
+        chatbotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const userMessage = chatbotInput.value.trim();
+            if (!userMessage) return;
+
+            // 사용자 메시지 표시
+            addMessage(userMessage, 'user');
+            chatbotInput.value = '';
+
+            // 전송 버튼 비활성화
+            chatbotSend.disabled = true;
+
+            // 타이핑 인디케이터 표시
+            const typingId = showTypingIndicator();
+
+            try {
+                // Gemini API 호출
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    { text: SYSTEM_CONTEXT }
+                                ]
+                            },
+                            ...conversationHistory,
+                            {
+                                parts: [
+                                    { text: userMessage }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 1024,
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 호출 실패');
+                }
+
+                const data = await response.json();
+                const botResponse = data.candidates[0].content.parts[0].text;
+
+                // 대화 히스토리에 추가
+                conversationHistory.push(
+                    {
+                        parts: [{ text: userMessage }],
+                        role: 'user'
+                    },
+                    {
+                        parts: [{ text: botResponse }],
+                        role: 'model'
+                    }
+                );
+
+                // 타이핑 인디케이터 제거
+                removeTypingIndicator(typingId);
+
+                // 봇 응답 표시
+                addMessage(botResponse, 'bot');
+
+            } catch (error) {
+                console.error('Error:', error);
+                removeTypingIndicator(typingId);
+                addMessage('죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요. 😢', 'bot');
+            } finally {
+                // 전송 버튼 재활성화
+                chatbotSend.disabled = false;
+                chatbotInput.focus();
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chatbot-message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+            chatbotMessages.appendChild(messageDiv);
+
+            // 스크롤을 최하단으로
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chatbot-message bot';
+            typingDiv.id = 'typing-indicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+            bubble.appendChild(typingIndicator);
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(bubble);
+            chatbotMessages.appendChild(typingDiv);
+
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+            return 'typing-indicator';
+        }
+
+        function removeTypingIndicator(id) {
+            const typingElement = document.getElementById(id);
+            if (typingElement) {
+                typingElement.remove();
+            }
+        }
     </script>
 
     <footer style="background: #2d3748; color: white; padding: 40px 20px; text-align: center;">
