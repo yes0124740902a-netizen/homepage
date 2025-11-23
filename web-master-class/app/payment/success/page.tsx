@@ -19,6 +19,43 @@ function SuccessContent() {
       setError('결제 정보가 올바르지 않습니다.');
       return;
     }
+
+    // 주문 정보를 localStorage에 저장
+    const saveOrder = () => {
+      try {
+        const user = localStorage.getItem('user');
+        if (user) {
+          const userData = JSON.parse(user);
+
+          // 기존 주문 내역 가져오기
+          const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+          // 새 주문 추가
+          const newOrder = {
+            id: Date.now().toString(),
+            orderNumber: orderId,
+            orderDate: new Date().toISOString(),
+            status: 'paid',
+            paymentKey: paymentKey,
+            items: [{
+              productId: orderId.split('_')[0] || 'unknown',
+              productName: '상품', // checkout에서 전달받은 상품명
+              quantity: 1,
+              price: parseInt(amount),
+            }],
+            totalAmount: parseInt(amount),
+            userId: userData.id || userData.email,
+          };
+
+          existingOrders.push(newOrder);
+          localStorage.setItem('orders', JSON.stringify(existingOrders));
+        }
+      } catch (error) {
+        console.error('주문 저장 실패:', error);
+      }
+    };
+
+    saveOrder();
     setTimeout(() => setVerified(true), 1000);
   }, [orderId, paymentKey, amount]);
 

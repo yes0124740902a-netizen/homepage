@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Package, ChevronLeft, ChevronRight, Eye, X, Star } from 'lucide-react';
 
 interface Order {
@@ -51,7 +51,24 @@ export default function OrdersPage() {
   const [selectedPeriod, setSelectedPeriod] = useState(3);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [orders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    // localStorage에서 실제 주문 내역 로드
+    const loadOrders = () => {
+      try {
+        const storedOrders = localStorage.getItem('orders');
+        if (storedOrders) {
+          const parsedOrders = JSON.parse(storedOrders);
+          setOrders(parsedOrders);
+        }
+      } catch (error) {
+        console.error('주문 내역 로드 실패:', error);
+      }
+    };
+
+    loadOrders();
+  }, []);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(orders.length / itemsPerPage);

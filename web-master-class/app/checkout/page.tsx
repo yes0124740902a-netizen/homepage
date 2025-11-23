@@ -66,6 +66,15 @@ function CheckoutContent() {
       return;
     }
 
+    // 전화번호에서 하이픈 제거 (숫자만)
+    const phoneNumber = customerPhone.replace(/[^0-9]/g, '');
+
+    // 전화번호 유효성 검사 (10~11자리)
+    if (phoneNumber.length < 10 || phoneNumber.length > 11) {
+      setError('전화번호는 10~11자리 숫자로 입력해주세요.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -78,7 +87,7 @@ function CheckoutContent() {
         orderName: `${product.name} x ${quantity}`,
         customerName: customerName,
         customerEmail: customerEmail,
-        customerMobilePhone: customerPhone,
+        customerMobilePhone: phoneNumber, // 하이픈 제거된 전화번호 전송
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`,
       });
@@ -136,9 +145,14 @@ function CheckoutContent() {
                   <input
                     type="tel"
                     value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onChange={(e) => {
+                      // 숫자만 입력 가능하도록
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setCustomerPhone(value);
+                    }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-                    placeholder="010-1234-5678"
+                    placeholder="01012345678 (숫자만 입력)"
+                    maxLength={11}
                     required
                   />
                 </div>
