@@ -41,8 +41,18 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
       }
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      // After successful login, redirect to a special page that saves to localStorage
+      if (url.includes('/api/auth/callback')) {
+        return `${baseUrl}/auth/success`;
+      }
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {

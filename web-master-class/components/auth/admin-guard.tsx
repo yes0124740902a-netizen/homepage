@@ -27,32 +27,31 @@ export default function AdminGuard({ children }: AdminGuardProps) {
         const user = localStorage.getItem('user');
 
         if (!user) {
-          console.log('No user found');
-          if (isMounted) {
+          if (isMounted && !pathname.includes('/admin/login')) {
             setIsLoading(false);
             setIsAdmin(false);
-            // Only redirect if we're not already on the login page
-            if (!pathname.includes('/admin/login')) {
-              router.replace('/admin/login');
-            }
+            router.replace('/admin/login');
+          } else if (pathname.includes('/admin/login')) {
+            // On login page, don't show error message
+            setIsLoading(false);
+            setIsAdmin(false);
           }
           return;
         }
 
         const userData = JSON.parse(user);
-        console.log('User data:', userData);
 
         if (userData.role !== 'admin') {
-          console.log('User is not admin');
           if (isMounted) {
             setIsLoading(false);
             setIsAdmin(false);
-            router.replace('/');
+            if (!pathname.includes('/admin/login')) {
+              router.replace('/');
+            }
           }
           return;
         }
 
-        console.log('User is admin, granting access');
         if (isMounted) {
           setIsAdmin(true);
           setIsLoading(false);
@@ -70,7 +69,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     };
 
     // Small delay to ensure proper hydration
-    const timer = setTimeout(checkAdmin, 200);
+    const timer = setTimeout(checkAdmin, 300);
 
     return () => {
       isMounted = false;

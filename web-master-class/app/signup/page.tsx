@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -67,8 +68,33 @@ export default function SignupPage() {
     }, 1000);
   };
 
+  const handleGoogleSignup = async () => {
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/',
+        redirect: false,
+      });
+
+      if (result?.ok) {
+        setTimeout(() => {
+          router.push('/');
+          window.location.reload();
+        }, 500);
+      } else if (result?.error) {
+        setError('Google 가입에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('Google signup error:', error);
+      setError('가입 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleSocialSignup = (provider: string) => {
-    setError(`${provider} 가입 기능은 준비 중입니다. 이메일로 가입해주세요.`);
+    if (provider === 'Google') {
+      handleGoogleSignup();
+    } else {
+      setError(`${provider} 가입 기능은 준비 중입니다.`);
+    }
   };
 
   const getStrengthColor = () => {
