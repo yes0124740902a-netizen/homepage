@@ -88,6 +88,11 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     );
   }
 
+  // Allow access to login page even if not admin
+  if (pathname.includes('/admin/login')) {
+    return <>{children}</>;
+  }
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -31,16 +31,28 @@ export default function Header() {
     const checkAuth = () => {
       if (typeof window !== 'undefined') {
         const user = localStorage.getItem('user');
-        console.log('Header checkAuth - user:', user ? 'found' : 'not found');
-        setIsLoggedIn(!!user);
+        const hasUser = !!user;
+
+        if (hasUser !== isLoggedIn) {
+          console.log('Header checkAuth - user state changed:', hasUser ? 'logged in' : 'logged out');
+          setIsLoggedIn(hasUser);
+        }
       }
     };
 
     // Check immediately on mount
     checkAuth();
 
-    // Set up polling to check every 500ms (in case storage event doesn't fire)
-    const pollInterval = setInterval(checkAuth, 500);
+    // Set up polling to check every 500ms for first 10 seconds (in case storage event doesn't fire)
+    let pollCount = 0;
+    const maxPolls = 20; // 10 seconds (500ms * 20)
+    const pollInterval = setInterval(() => {
+      checkAuth();
+      pollCount++;
+      if (pollCount >= maxPolls) {
+        clearInterval(pollInterval);
+      }
+    }, 500);
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('storage', checkAuth);
@@ -52,7 +64,7 @@ export default function Header() {
       window.removeEventListener('storage', checkAuth);
       window.removeEventListener('userLogin', checkAuth);
     };
-  }, []);
+  }, [isLoggedIn]);
 
   const navigationItems = isLoggedIn ? loggedInNavigationItems : publicNavigationItems;
 
