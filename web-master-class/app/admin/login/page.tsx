@@ -26,8 +26,7 @@ export default function AdminLoginPage() {
       };
 
       localStorage.setItem('user', JSON.stringify(adminUser));
-      router.push('/admin');
-      window.location.reload();
+      router.replace('/admin');
     } else {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }

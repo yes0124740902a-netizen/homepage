@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 
-const CLIENT_KEY = 'test_ck_Z1aOwX7K8mQYPdYXPNP3yQxzvNPG'; // 토스페이먼츠 테스트 클라이언트 키
+const CLIENT_KEY = 'test_ck_Z61JOxRQVEbNy2ebxddmrW0X9bAq'; // 토스페이먼츠 테스트 클라이언트 키
 
 interface ProductInfo {
   id: string;

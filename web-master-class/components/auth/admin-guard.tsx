@@ -15,25 +15,35 @@ export default function AdminGuard({ children }: AdminGuardProps) {
 
   useEffect(() => {
     const checkAdmin = () => {
-      const user = localStorage.getItem('user');
+      try {
+        const user = localStorage.getItem('user');
 
-      if (!user) {
+        if (!user) {
+          router.push('/admin/login');
+          setIsLoading(false);
+          return;
+        }
+
+        const userData = JSON.parse(user);
+
+        if (userData.role !== 'admin') {
+          router.push('/');
+          setIsLoading(false);
+          return;
+        }
+
+        setIsAdmin(true);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Admin check error:', error);
         router.push('/admin/login');
-        return;
+        setIsLoading(false);
       }
-
-      const userData = JSON.parse(user);
-
-      if (userData.role !== 'admin') {
-        router.push('/');
-        return;
-      }
-
-      setIsAdmin(true);
-      setIsLoading(false);
     };
 
-    checkAdmin();
+    // Add a small delay to ensure client-side hydration
+    const timer = setTimeout(checkAdmin, 100);
+    return () => clearTimeout(timer);
   }, [router]);
 
   if (isLoading) {
