@@ -18,10 +18,28 @@ export default function AuthButtons({ mobile = false }: AuthButtonsProps) {
 
   useEffect(() => {
     // Check for logged-in user
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const checkAuth = () => {
+      const storedUser = localStorage.getItem('user');
+      console.log('AuthButtons checkAuth - storedUser:', storedUser ? JSON.parse(storedUser).email : 'none');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    };
+
+    // Check immediately on mount
+    checkAuth();
+
+    // Listen for storage events (from other tabs/windows)
+    window.addEventListener('storage', checkAuth);
+    // Listen for custom userLogin event (from same tab)
+    window.addEventListener('userLogin', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('userLogin', checkAuth);
+    };
   }, []);
 
   useEffect(() => {
