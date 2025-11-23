@@ -33,13 +33,18 @@ export default function LoginPage() {
     };
 
     // Always use localStorage for demo
+    console.log('Email login - saving user:', user);
     localStorage.setItem('user', JSON.stringify(user));
+
+    // Trigger events for other components
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('userLogin', { detail: user }));
 
     setSuccess('로그인 성공! 메인 페이지로 이동합니다...');
 
     setTimeout(() => {
-      router.push('/');
-      window.location.reload(); // Force reload to update auth state
+      console.log('Email login - redirecting to home');
+      window.location.href = '/';
     }, 1000);
   };
 
