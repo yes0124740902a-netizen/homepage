@@ -38,8 +38,7 @@ export default function AdminSidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    router.push('/admin/login');
-    window.location.reload();
+    router.replace('/admin/login');
   };
 
   return (
