@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -42,8 +43,34 @@ export default function LoginPage() {
     }, 1000);
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/',
+        redirect: false,
+      });
+
+      if (result?.ok) {
+        // Save user data to localStorage for consistency with existing flow
+        setTimeout(() => {
+          router.push('/');
+          window.location.reload();
+        }, 500);
+      } else if (result?.error) {
+        setError('Google 로그인에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      setError('로그인 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleSocialLogin = (provider: string) => {
-    setError(`${provider} 로그인 기능은 준비 중입니다. 이메일로 로그인해주세요.`);
+    if (provider === 'Google') {
+      handleGoogleLogin();
+    } else {
+      setError(`${provider} 로그인 기능은 준비 중입니다.`);
+    }
   };
 
   return (

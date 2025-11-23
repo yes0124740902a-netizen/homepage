@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import NextAuthProvider from "@/components/providers/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,18 +36,20 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${geistSans.variable} antialiased`}>
-        <Header />
-        <div className="pt-16 md:pt-20">
-          {children}
-        </div>
-        <footer className="bg-gray-800 text-white py-10">
-          <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2025 웹제작 마스터 클래스. All rights reserved.</p>
-            <p className="mt-2 text-sm opacity-70">
-              사업자등록번호: 123-45-67890 | 대표: 김웹마스터 | 이메일: web-master@example.com
-            </p>
+        <NextAuthProvider>
+          <Header />
+          <div className="pt-16 md:pt-20">
+            {children}
           </div>
-        </footer>
+          <footer className="bg-gray-800 text-white py-10">
+            <div className="container mx-auto px-4 text-center">
+              <p>&copy; 2025 웹제작 마스터 클래스. All rights reserved.</p>
+              <p className="mt-2 text-sm opacity-70">
+                사업자등록번호: 123-45-67890 | 대표: 김웹마스터 | 이메일: web-master@example.com
+              </p>
+            </div>
+          </footer>
+        </NextAuthProvider>
       </body>
     </html>
   );
