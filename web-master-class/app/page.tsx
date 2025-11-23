@@ -1,6 +1,20 @@
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
+  // Trigger auth check on page load (helps with Google OAuth redirect)
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      console.log('Home page - user found in localStorage, triggering events');
+      // Trigger events to update header/auth buttons
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('userLogin', { detail: JSON.parse(user) }));
+    }
+  }, []);
+
   return (
     <main className="min-h-screen">
       {/* Hero Section */}

@@ -39,11 +39,12 @@ export default function AuthSuccess() {
       // Also dispatch a custom event
       window.dispatchEvent(new CustomEvent('userLogin', { detail: userData }));
 
-      // Redirect to home after a short delay
+      // Redirect to home after ensuring events are processed
       setTimeout(() => {
         console.log('Redirecting to home...');
-        window.location.href = '/';
-      }, 1000);
+        // Use replace instead of href to ensure clean navigation
+        window.location.replace('/');
+      }, 1500); // Increased delay to 1.5 seconds
     } else if (status === 'unauthenticated' && !redirecting) {
       console.log('Unauthenticated, redirecting to login');
       router.push('/login');
