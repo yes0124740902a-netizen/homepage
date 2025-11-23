@@ -70,19 +70,11 @@ export default function SignupPage() {
 
   const handleGoogleSignup = async () => {
     try {
+      console.log('Google signup clicked');
       const result = await signIn('google', {
-        callbackUrl: '/',
-        redirect: false,
+        redirect: true,
+        callbackUrl: '/auth/success',
       });
-
-      if (result?.ok) {
-        setTimeout(() => {
-          router.push('/');
-          window.location.reload();
-        }, 500);
-      } else if (result?.error) {
-        setError('Google 가입에 실패했습니다. 다시 시도해주세요.');
-      }
     } catch (error) {
       console.error('Google signup error:', error);
       setError('가입 중 오류가 발생했습니다.');

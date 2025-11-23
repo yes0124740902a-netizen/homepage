@@ -25,8 +25,22 @@ export default function AdminLoginPage() {
         joinDate: new Date().toISOString(),
       };
 
+      console.log('Admin login - saving user:', adminUser);
       localStorage.setItem('user', JSON.stringify(adminUser));
-      router.replace('/admin');
+
+      // Verify it was saved
+      const saved = localStorage.getItem('user');
+      console.log('Admin login - verified saved:', saved);
+
+      // Trigger events
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('userLogin', { detail: adminUser }));
+
+      // Redirect after a short delay
+      setTimeout(() => {
+        console.log('Admin login - redirecting to /admin');
+        window.location.href = '/admin';
+      }, 500);
     } else {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }

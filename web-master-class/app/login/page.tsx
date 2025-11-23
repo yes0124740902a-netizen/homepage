@@ -45,20 +45,11 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
+      console.log('Google login clicked');
       const result = await signIn('google', {
-        callbackUrl: '/',
-        redirect: false,
+        redirect: true,
+        callbackUrl: '/auth/success',
       });
-
-      if (result?.ok) {
-        // Save user data to localStorage for consistency with existing flow
-        setTimeout(() => {
-          router.push('/');
-          window.location.reload();
-        }, 500);
-      } else if (result?.error) {
-        setError('Google 로그인에 실패했습니다. 다시 시도해주세요.');
-      }
     } catch (error) {
       console.error('Google login error:', error);
       setError('로그인 중 오류가 발생했습니다.');

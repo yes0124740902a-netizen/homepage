@@ -29,17 +29,28 @@ export default function Header() {
     };
 
     const checkAuth = () => {
-      const user = localStorage.getItem('user');
-      setIsLoggedIn(!!user);
+      if (typeof window !== 'undefined') {
+        const user = localStorage.getItem('user');
+        console.log('Header checkAuth - user:', user ? 'found' : 'not found');
+        setIsLoggedIn(!!user);
+      }
     };
 
+    // Check immediately on mount
     checkAuth();
+
+    // Set up polling to check every 500ms (in case storage event doesn't fire)
+    const pollInterval = setInterval(checkAuth, 500);
+
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('storage', checkAuth);
+    window.addEventListener('userLogin', checkAuth);
 
     return () => {
+      clearInterval(pollInterval);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('userLogin', checkAuth);
     };
   }, []);
 

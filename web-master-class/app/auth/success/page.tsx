@@ -1,15 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function AuthSuccess() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
+    console.log('AuthSuccess - Status:', status, 'Session:', session);
+
+    if (status === 'authenticated' && session?.user && !redirecting) {
+      setRedirecting(true);
+
       // Save user to localStorage
       const userData = {
         id: session.user.id || session.user.email?.replace('@', '_').replace(/\./g, '_') || Date.now().toString(),
@@ -21,22 +26,29 @@ export default function AuthSuccess() {
         image: session.user.image || '',
       };
 
+      console.log('Saving user to localStorage:', userData);
       localStorage.setItem('user', JSON.stringify(userData));
-      console.log('User saved to localStorage:', userData);
+
+      // Verify it was saved
+      const saved = localStorage.getItem('user');
+      console.log('Verified saved user:', saved);
 
       // Trigger storage event for other components
       window.dispatchEvent(new Event('storage'));
 
+      // Also dispatch a custom event
+      window.dispatchEvent(new CustomEvent('userLogin', { detail: userData }));
+
       // Redirect to home after a short delay
       setTimeout(() => {
-        router.push('/');
-        window.location.reload();
-      }, 500);
-    } else if (status === 'unauthenticated') {
-      // If not authenticated, redirect to login
+        console.log('Redirecting to home...');
+        window.location.href = '/';
+      }, 1000);
+    } else if (status === 'unauthenticated' && !redirecting) {
+      console.log('Unauthenticated, redirecting to login');
       router.push('/login');
     }
-  }, [session, status, router]);
+  }, [session, status, router, redirecting]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900">
