@@ -32,11 +32,8 @@ export default function Header() {
       if (typeof window !== 'undefined') {
         const user = localStorage.getItem('user');
         const hasUser = !!user;
-
-        if (hasUser !== isLoggedIn) {
-          console.log('Header checkAuth - user state changed:', hasUser ? 'logged in' : 'logged out');
-          setIsLoggedIn(hasUser);
-        }
+        console.log('Header checkAuth - user:', user ? JSON.parse(user).email : 'none', 'hasUser:', hasUser);
+        setIsLoggedIn(hasUser);
       }
     };
 
@@ -51,6 +48,7 @@ export default function Header() {
       pollCount++;
       if (pollCount >= maxPolls) {
         clearInterval(pollInterval);
+        console.log('Header - stopped polling after 10 seconds');
       }
     }, 500);
 
@@ -64,7 +62,7 @@ export default function Header() {
       window.removeEventListener('storage', checkAuth);
       window.removeEventListener('userLogin', checkAuth);
     };
-  }, [isLoggedIn]);
+  }, []); // Remove isLoggedIn from dependency array to prevent infinite loop
 
   const navigationItems = isLoggedIn ? loggedInNavigationItems : publicNavigationItems;
 
