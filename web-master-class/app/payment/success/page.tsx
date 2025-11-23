@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Home, FileText } from 'lucide-react';
+import { createOrder } from '@/lib/firestore';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -20,35 +21,48 @@ function SuccessContent() {
       return;
     }
 
-    // 주문 정보를 localStorage에 저장
-    const saveOrder = () => {
+    // 주문 정보를 Firestore와 localStorage에 저장
+    const saveOrder = async () => {
       try {
         const user = localStorage.getItem('user');
         if (user) {
           const userData = JSON.parse(user);
 
-          // 기존 주문 내역 가져오기
-          const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-
-          // 새 주문 추가
+          // 새 주문 데이터
           const newOrder = {
-            id: Date.now().toString(),
             orderNumber: orderId,
             orderDate: new Date().toISOString(),
             status: 'paid',
             paymentKey: paymentKey,
             items: [{
               productId: orderId.split('_')[0] || 'unknown',
-              productName: '상품', // checkout에서 전달받은 상품명
+              productName: '상품',
               quantity: 1,
               price: parseInt(amount),
             }],
             totalAmount: parseInt(amount),
             userId: userData.id || userData.email,
+            userName: userData.name || '고객',
+            userEmail: userData.email || '',
           };
 
-          existingOrders.push(newOrder);
-          localStorage.setItem('orders', JSON.stringify(existingOrders));
+          // Firestore에 저장
+          const result = await createOrder(newOrder);
+
+          if (result.success) {
+            console.log('주문이 Firestore에 저장되었습니다:', result.id);
+
+            // localStorage에도 백업 저장 (오프라인 지원)
+            const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            existingOrders.push({ id: result.id, ...newOrder });
+            localStorage.setItem('orders', JSON.stringify(existingOrders));
+          } else {
+            console.error('Firestore 저장 실패, localStorage만 사용:', result.error);
+            // Firestore 실패 시 localStorage만 사용
+            const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            existingOrders.push({ id: Date.now().toString(), ...newOrder });
+            localStorage.setItem('orders', JSON.stringify(existingOrders));
+          }
         }
       } catch (error) {
         console.error('주문 저장 실패:', error);

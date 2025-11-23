@@ -15,6 +15,8 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   const pathname = usePathname();
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkAdmin = () => {
       try {
         // Only check on client-side
@@ -25,10 +27,15 @@ export default function AdminGuard({ children }: AdminGuardProps) {
         const user = localStorage.getItem('user');
 
         if (!user) {
-          console.log('No user found, redirecting to login');
-          setIsLoading(false);
-          setIsAdmin(false);
-          router.replace('/admin/login');
+          console.log('No user found');
+          if (isMounted) {
+            setIsLoading(false);
+            setIsAdmin(false);
+            // Only redirect if we're not already on the login page
+            if (!pathname.includes('/admin/login')) {
+              router.replace('/admin/login');
+            }
+          }
           return;
         }
 
@@ -36,27 +43,39 @@ export default function AdminGuard({ children }: AdminGuardProps) {
         console.log('User data:', userData);
 
         if (userData.role !== 'admin') {
-          console.log('User is not admin, redirecting to home');
-          setIsLoading(false);
-          setIsAdmin(false);
-          router.replace('/');
+          console.log('User is not admin');
+          if (isMounted) {
+            setIsLoading(false);
+            setIsAdmin(false);
+            router.replace('/');
+          }
           return;
         }
 
         console.log('User is admin, granting access');
-        setIsAdmin(true);
-        setIsLoading(false);
+        if (isMounted) {
+          setIsAdmin(true);
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error('Admin check error:', error);
-        setIsLoading(false);
-        setIsAdmin(false);
-        router.replace('/admin/login');
+        if (isMounted) {
+          setIsLoading(false);
+          setIsAdmin(false);
+          if (!pathname.includes('/admin/login')) {
+            router.replace('/admin/login');
+          }
+        }
       }
     };
 
     // Small delay to ensure proper hydration
-    const timer = setTimeout(checkAdmin, 150);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(checkAdmin, 200);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, [router, pathname]);
 
   if (isLoading) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Package, ChevronLeft, ChevronRight, Eye, X, Star } from 'lucide-react';
+import { getOrdersByUser } from '@/lib/firestore';
 
 interface Order {
   id: string;
@@ -54,16 +55,45 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    // localStorage에서 실제 주문 내역 로드
-    const loadOrders = () => {
+    // Firestore에서 실제 주문 내역 로드
+    const loadOrders = async () => {
       try {
-        const storedOrders = localStorage.getItem('orders');
-        if (storedOrders) {
-          const parsedOrders = JSON.parse(storedOrders);
-          setOrders(parsedOrders);
+        const user = localStorage.getItem('user');
+        if (!user) {
+          console.log('로그인되지 않은 사용자');
+          return;
+        }
+
+        const userData = JSON.parse(user);
+        const userId = userData.id || userData.email;
+
+        // Firestore에서 사용자 주문 가져오기
+        const result = await getOrdersByUser(userId);
+
+        if (result.success && result.data) {
+          console.log('Firestore에서 주문 로드:', result.data);
+          setOrders(result.data as Order[]);
+        } else {
+          console.log('Firestore 로드 실패, localStorage 사용');
+          // Firestore 실패 시 localStorage에서 가져오기
+          const storedOrders = localStorage.getItem('orders');
+          if (storedOrders) {
+            const parsedOrders = JSON.parse(storedOrders);
+            setOrders(parsedOrders);
+          }
         }
       } catch (error) {
         console.error('주문 내역 로드 실패:', error);
+        // 에러 발생 시 localStorage 폴백
+        try {
+          const storedOrders = localStorage.getItem('orders');
+          if (storedOrders) {
+            const parsedOrders = JSON.parse(storedOrders);
+            setOrders(parsedOrders);
+          }
+        } catch (e) {
+          console.error('localStorage 로드도 실패:', e);
+        }
       }
     };
 

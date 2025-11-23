@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Users, ShoppingCart, Package, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { getAllOrders, getAllUsers } from '@/lib/firestore';
 
 const salesData = [
   { month: '1월', sales: 4200000, orders: 12 },
@@ -19,14 +21,6 @@ const productData = [
   { name: '테스트', value: 5, color: '#c084fc' },
 ];
 
-const recentOrders = [
-  { id: 1, customer: '김철수', product: '프리미엄 과정', amount: 497000, status: 'paid', date: '2024-01-20' },
-  { id: 2, customer: '이영희', product: '기본 과정', amount: 297000, status: 'shipping', date: '2024-01-20' },
-  { id: 3, customer: '박민수', product: '기업 교육', amount: 2500000, status: 'delivered', date: '2024-01-19' },
-  { id: 4, customer: '정수진', product: '프리미엄 과정', amount: 497000, status: 'paid', date: '2024-01-19' },
-  { id: 5, customer: '최동욱', product: '기본 과정', amount: 297000, status: 'cancelled', date: '2024-01-18' },
-];
-
 const statusColors: Record<string, string> = {
   paid: 'bg-blue-100 text-blue-700',
   shipping: 'bg-purple-100 text-purple-700',
@@ -42,6 +36,41 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Firestore에서 모든 주문 가져오기
+        const ordersResult = await getAllOrders();
+        if (ordersResult.success && ordersResult.data) {
+          const orders = ordersResult.data;
+          setRecentOrders(orders.slice(0, 5)); // 최근 5개만
+          setTotalOrders(orders.length);
+
+          // 총 매출 계산
+          const revenue = orders.reduce((sum: number, order: any) => {
+            return sum + (order.totalAmount || 0);
+          }, 0);
+          setTotalRevenue(revenue);
+        }
+
+        // Firestore에서 모든 사용자 가져오기
+        const usersResult = await getAllUsers();
+        if (usersResult.success && usersResult.data) {
+          setTotalUsers(usersResult.data.length);
+        }
+      } catch (error) {
+        console.error('대시보드 데이터 로드 실패:', error);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -62,7 +91,7 @@ export default function AdminDashboard() {
               12.5%
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">1,234</h3>
+          <h3 className="text-2xl font-bold text-gray-900">{totalUsers.toLocaleString()}</h3>
           <p className="text-gray-600 text-sm">총 회원 수</p>
         </div>
 
@@ -76,8 +105,8 @@ export default function AdminDashboard() {
               8.3%
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">101</h3>
-          <p className="text-gray-600 text-sm">이번 달 주문</p>
+          <h3 className="text-2xl font-bold text-gray-900">{totalOrders}</h3>
+          <p className="text-gray-600 text-sm">총 주문 수</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -90,8 +119,8 @@ export default function AdminDashboard() {
               15.2%
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">8,100,000원</h3>
-          <p className="text-gray-600 text-sm">이번 달 매출</p>
+          <h3 className="text-2xl font-bold text-gray-900">{totalRevenue.toLocaleString()}원</h3>
+          <p className="text-gray-600 text-sm">총 매출</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -172,21 +201,25 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">최근 주문</h3>
           <div className="space-y-3">
-            {recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900">{order.customer}</p>
-                  <p className="text-sm text-gray-600">{order.product}</p>
-                  <p className="text-xs text-gray-500">{order.date}</p>
+            {recentOrders.length > 0 ? (
+              recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">{order.userName || '고객'}</p>
+                    <p className="text-sm text-gray-600">{order.items?.[0]?.productName || '상품'}</p>
+                    <p className="text-xs text-gray-500">{new Date(order.orderDate).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900">{(order.totalAmount || 0).toLocaleString()}원</p>
+                    <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[order.status]}`}>
+                      {statusLabels[order.status]}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">{order.amount.toLocaleString()}원</p>
-                  <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[order.status]}`}>
-                    {statusLabels[order.status]}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-8">주문 내역이 없습니다</p>
+            )}
           </div>
         </div>
       </div>
