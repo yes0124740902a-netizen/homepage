@@ -1,11 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: 웹제작 마스터 클래스 랜딩페이지\n\n- 완성된 랜딩페이지 (10개 섹션 구성)\n- 구글 시트 연동 신청 폼\n- SEO 최적화 메타데이터\n- 오픈 그래프 이미지 설정\n- robots.txt & sitemap.xml 생성\n- Vercel 배포 설정\n\n🤖 Generated with Claude Code\nEOF\n)\")",
-      "Bash(vercel --prod --yes:*)",
-      "Bash(git push:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nAdd Google Sheets integration for chatbot conversations\n\n- Created chatbot-google-apps-script.js for logging conversations\n- Google Sheet ID: 1OeXwAHIu2GtYIOgJEMB-kOfWtZq_nsJZFuyoc-YHQPA\n- Added saveToGoogleSheets() function to landing page\n- Tracks session ID, messages, AI responses, timestamps\n- Auto-creates \"챗봇 대화기록\" sheet with formatted headers\n- Includes statistics generation function\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
